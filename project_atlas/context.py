@@ -139,10 +139,10 @@ def agents(rec):
             logs = sorted(glob.glob(os.path.join(pdir, "*.jsonl")), key=os.path.getmtime)
             if logs:
                 rec.add(_cwd(logs[-1], 30), "Claude Code", os.path.getmtime(logs[-1]), len(logs))
-    codex = os.environ.get("CODEX_HOME") or os.path.join(HOME, ".codex")
-    files = []
-    for sub in ("sessions", "archived_sessions"):
-        files += glob.glob(os.path.join(codex, sub, "**", "*.jsonl"), recursive=True)
+    files = []  # 设置过 CODEX_HOME 的话，新旧两个位置都可能有记录
+    for codex in dict.fromkeys(c for c in (os.environ.get("CODEX_HOME"), os.path.join(HOME, ".codex")) if c):
+        for sub in ("sessions", "archived_sessions"):
+            files += glob.glob(os.path.join(codex, sub, "**", "*.jsonl"), recursive=True)
     for f in sorted(files, key=os.path.getmtime)[-3000:]:
         rec.add(_cwd(f, 3), "Codex", os.path.getmtime(f))
 

@@ -3,6 +3,7 @@
 
 不修改、不移动、不删除任何文件；不跟随符号链接 / junction；不读取云端占位文件（避免触发下载）。
 """
+import json
 import os
 import re
 import shutil
@@ -266,12 +267,18 @@ README = ("README.md", "README_CN.md", "README.zh-CN.md", "README.zh.md", "readm
 
 def describe(path):
     """一句话说明：package.json / pyproject.toml / Cargo.toml 的 description，或 README 第一段。"""
-    for fname, pat in (("package.json", r'"description"\s*:\s*"([^"]{2,200})"'),
+    for fname, pat in (("package.json", r'"description"\s*:\s*"((?:[^"\\]|\\.){2,200})"'),
                        ("pyproject.toml", r'^description\s*=\s*["\']([^"\']{2,200})["\']'),
                        ("Cargo.toml", r'^description\s*=\s*"([^"]{2,200})"')):
         m = re.search(pat, head(os.path.join(path, fname)), re.M)
         if m:
-            return m.group(1).strip()
+            text = m.group(1).strip()
+            if fname == "package.json":  # JSON 里的 \u5c0f 这类转义要解开
+                try:
+                    text = json.loads('"' + text + '"')
+                except ValueError:
+                    pass
+            return text
     for fname in README:
         title = None
         for line in head(os.path.join(path, fname)).splitlines():

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "project-atlas"
-version = "1.0.0"
+dynamic = ["version"]
 description = "Read-only scan of every project on your computer, rendered as one offline overview page."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -23,6 +23,9 @@ project-atlas = "project_atlas.__main__:main"
 
 [tool.setuptools]
 packages = ["project_atlas"]
+
+[tool.setuptools.dynamic]
+version = { attr = "project_atlas.__version__" }
 
 [tool.setuptools.package-data]
 project_atlas = ["web/*"]

@@ -50,6 +50,17 @@ class RulesTest(unittest.TestCase):
         self.assertEqual(collect_type("build-tmp", self_only=True), "临时/测试")
 
 
+class DescribeTest(unittest.TestCase):
+    def test_package_json_unicode_escapes(self):
+        from project_atlas.scan import describe
+        d = tempfile.mkdtemp(prefix="atlas-desc-")
+        try:
+            touch(os.path.join(d, "package.json"), json.dumps({"description": "小店前台"}))  # 默认转义成 \uXXXX
+            self.assertEqual(describe(d), "小店前台")
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+
 class PipelineTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -81,6 +92,13 @@ class PipelineTest(unittest.TestCase):
             os.makedirs(os.path.join(r, cls.bad, "data"))
         except (UnicodeError, OSError):
             cls.bad = None
+        outside = os.path.join(cls.tmp, "outside", "secret-project")
+        touch(os.path.join(outside, "package.json"), "{}")
+        try:  # 扫描范围内放一个指向范围外项目的符号链接，扫描不应跟过去
+            os.symlink(outside, os.path.join(r, "linked-project"), target_is_directory=True)
+            cls.link = True
+        except (OSError, NotImplementedError):
+            cls.link = False
         cls.out = os.path.join(cls.tmp, "out")
         cls.code = main([r, "-o", cls.out, "--json", "--no-recents"])
         with open(os.path.join(cls.out, "atlas.json"), encoding="utf-8") as f:
@@ -135,6 +153,12 @@ class PipelineTest(unittest.TestCase):
     def test_scan_is_read_only(self):
         self.assertTrue(os.path.isfile(os.path.join(self.root, "tmp", "run-1", "main.py")))
         self.assertTrue(os.path.isdir(os.path.join(self.root, "shop-web", "node_modules")))
+
+    def test_symlinks_are_not_followed(self):
+        if not self.link:
+            self.skipTest("cannot create symlinks on this system")
+        self.assertNotIn("secret-project", self.rows)
+        self.assertNotIn("linked-project", self.rows)
 
     def test_mojibake_detected(self):
         if not self.bad:

@@ -17,6 +17,10 @@ IDENTITY = {"GIT_AUTHOR_NAME": "Demo", "GIT_AUTHOR_EMAIL": "demo@example.invalid
             "GIT_COMMITTER_NAME": "Demo", "GIT_COMMITTER_EMAIL": "demo@example.invalid"}
 
 
+def js(obj):
+    return json.dumps(obj, ensure_ascii=False)
+
+
 def put(root, rel, text="", size=None, age=0.0):
     p = os.path.join(root, *rel.split("/"))
     os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -49,7 +53,7 @@ def repo(path, age, remote=None, pushed=True, dirty=()):
 
 def make(root):
     j = os.path.join
-    put(root, "work/shop-web/package.json", json.dumps({"name": "shop-web", "description": "小店前台：商品页、购物车和下单"}), age=3)
+    put(root, "work/shop-web/package.json", js({"name": "shop-web", "description": "小店前台：商品页、购物车和下单"}), age=3)
     put(root, "work/shop-web/.gitignore", "node_modules/\n", age=3)
     put(root, "work/shop-web/src/App.tsx", "export default function App() { return null }\n", age=3)
     put(root, "work/shop-web/node_modules/react/index.js", size=180 * 2 ** 20, age=40)
@@ -60,7 +64,7 @@ def make(root):
     repo(j(root, "work", "api-server"), 12, "https://github.com/your-name/api-server.git")
     put(root, "work/mobile-app/pubspec.yaml", "name: mobile_app\ndescription: 会员小程序的移动端\n", age=150)
     put(root, "work/mobile-app/lib/main.dart", "void main() {}\n", age=150)
-    put(root, "personal/blog/package.json", json.dumps({"name": "blog", "description": "个人博客"}), age=20)
+    put(root, "personal/blog/package.json", js({"name": "blog", "description": "个人博客"}), age=20)
     put(root, "personal/blog/source/hello.md", "# Hello\n", age=20)
     repo(j(root, "personal", "blog"), 20, dirty=["source/draft.md"])
     put(root, "personal/notes/.obsidian/app.json", "{}", age=1)
@@ -71,14 +75,14 @@ def make(root):
     put(root, "learning/rust-book/src/main.rs", "fn main() {}\n", age=95)
     for i, name in enumerate(("two_sum", "binary_search", "dijkstra", "lru_cache")):
         put(root, "learning/algorithms/%s.py" % name, "def solve(): pass\n", age=40 + i)
-    put(root, "opensource/markdown-parser/package.json", json.dumps({"name": "markdown-parser"}), age=200)
+    put(root, "opensource/markdown-parser/package.json", js({"name": "markdown-parser"}), age=200)
     put(root, "opensource/markdown-parser/src/index.js", "module.exports = {}\n", age=200)
     repo(j(root, "opensource", "markdown-parser"), 200, "https://github.com/someone-else/markdown-parser.git",
          dirty=["src/table.js"])
     put(root, "ml/sentiment-model/requirements.txt", "torch\n", age=33)
     put(root, "ml/sentiment-model/train.py", "print('train')\n", age=33)
     put(root, "ml/sentiment-model/models/model.safetensors", size=420 * 2 ** 20, age=33)
-    put(root, "old-laptop/shop-web/package.json", json.dumps({"name": "shop-web"}), age=400)
+    put(root, "old-laptop/shop-web/package.json", js({"name": "shop-web"}), age=400)
     put(root, "backups/blog-2023/package.json", "{}", age=300)
     put(root, "backups/api-server-v1/pyproject.toml", "", age=280)
     for tag in ("a1b2c3d4", "e5f6a7b8", "9c0d1e2f"):
