@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目总览 · Project Atlas</title>
+<script>if (window.self === window.top) document.documentElement.classList.add("standalone");</script>
+<style>
+html.standalone {
+  --foreground: #2a2e31; --muted-foreground: #5f5c56; --border: #e3e0d9; --card: #ffffff; --accent: #f1efe9;
+  background: #f7f6f3; color: var(--foreground); font-size: 14px; line-height: 1.55;
+  font-family: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "PingFang SC", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  html.standalone {
+    --foreground: #e8e6e1; --muted-foreground: #a6a39b; --border: #37352f; --card: #1f1e1c; --accent: #2b2a26;
+    background: #161514;
+  }
+}
+html.standalone body { margin: 0; }
+.po {
+  color: var(--foreground); font-variant-numeric: tabular-nums;
+  --red: color-mix(in srgb, #e03131 70%, var(--foreground));
+  --green: color-mix(in srgb, #2f9e44 75%, var(--foreground));
+  --blue: color-mix(in srgb, #1c7ed6 75%, var(--foreground));
+  --amber: color-mix(in srgb, #d9480f 60%, var(--foreground));
+}
+html.standalone .po { max-width: 1480px; margin: 0 auto; padding: 36px 28px 72px; }
+.po * { box-sizing: border-box; }
+.po h1 { font-size: 26px; letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 6px; font-weight: 650; }
+.po h2 { font-size: 16px; margin: 26px 0 10px; font-weight: 650; }
+.po h2:first-child { margin-top: 4px; }
+.po h3 { font-size: 14px; margin: 16px 0 6px; font-weight: 650; }
+.po p { margin: 6px 0; }
+.mut, .meta { color: var(--muted-foreground); }
+.meta { font-size: 12.5px; margin: 0 0 18px; white-space: pre-line; }
+.mono { font-family: "Cascadia Mono", Consolas, "SF Mono", monospace; font-size: 12px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 0 0 12px; }
+.tile { border: 1px solid var(--border); border-radius: 10px; background: var(--card); padding: 12px 14px; }
+.tile b { display: block; font-size: 22px; font-weight: 650; letter-spacing: -0.01em; }
+.tile span { font-size: 12px; color: var(--muted-foreground); }
+.alerts { border: 1px solid var(--border); border-radius: 10px; background: var(--card); padding: 10px 14px 10px 32px;
+  margin: 0 0 14px; }
+.alerts li { margin: 3px 0; }
+.alerts li.hi::marker { color: var(--red); }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin: 6px 0 14px; overflow-x: auto; }
+.tabs button { appearance: none; border: 0; background: none; color: var(--muted-foreground); font: inherit;
+  padding: 8px 12px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--foreground); border-bottom-color: currentColor; font-weight: 600; }
+.po :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 10px; }
+.bar input[type="search"] { flex: 1 1 240px; min-width: 200px; }
+.po input, .po select { font: inherit; color: inherit; background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 8px; }
+.chk { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; }
+.scroll { overflow: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
+html:not(.standalone) .scroll { max-height: 560px; }
+.po table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.po th, .po td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.po thead th { position: sticky; top: 0; background: var(--card); z-index: 1; font-weight: 600; white-space: nowrap; }
+.po tbody tr:last-child td { border-bottom: 0; }
+th button { all: unset; cursor: pointer; }
+th[aria-sort="ascending"] button::after { content: " ↑"; }
+th[aria-sort="descending"] button::after { content: " ↓"; }
+.num { text-align: right !important; white-space: nowrap; }
+tr.row:hover > td { background: var(--accent); }
+.tog { all: unset; cursor: pointer; font-weight: 600; }
+.tog::before { content: "+ "; color: var(--muted-foreground); font-family: Consolas, monospace; }
+.tog[aria-expanded="true"]::before { content: "− "; }
+.path { display: block; color: var(--muted-foreground); word-break: break-all; margin-top: 3px; line-height: 1.45; }
+.tag { display: inline-block; border-radius: 999px; padding: 0 8px; font-size: 12px; margin: 1px 4px 1px 0;
+  background: var(--accent); border: 1px solid var(--border); white-space: nowrap; }
+.po td:first-child { min-width: 260px; }
+.po td:nth-child(n+5) { white-space: normal; }
+.st { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.st::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c, #9a9790); }
+.st-活跃 { --c: #2f9e44; } .st-近期 { --c: #1c7ed6; } .st-休眠 { --c: #e8a317; } .st-冷 { --c: #9a9790; }
+.iss { color: var(--red); }
+.ok { color: var(--green); }
+tr.det > td { background: var(--accent); padding: 10px 14px 12px 26px; }
+tr.det > td > div { margin: 3px 0; }
+tr.det b { font-weight: 600; margin-right: 6px; }
+.kids { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 16px; margin-top: 4px;
+  max-height: 240px; overflow: auto; }
+.btn { font: inherit; font-size: 12px; color: inherit; background: var(--card); border: 1px solid var(--border);
+  border-radius: 6px; padding: 1px 8px; cursor: pointer; }
+.btn:hover { background: var(--accent); }
+details.grp, details.blk { border: 1px solid var(--border); border-radius: 10px; background: var(--card);
+  margin: 0 0 8px; }
+details.grp > summary, details.blk > summary { cursor: pointer; padding: 10px 14px; display: flex; flex-wrap: wrap;
+  gap: 6px 14px; align-items: baseline; list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details.grp > summary::before, details.blk > summary::before { content: "+"; font-family: Consolas, monospace;
+  color: var(--muted-foreground); width: 10px; }
+details[open].grp > summary::before, details[open].blk > summary::before { content: "−"; }
+summary .gn { font-weight: 650; font-size: 14.5px; }
+summary .gs { font-size: 12.5px; color: var(--muted-foreground); }
+details.grp .scroll, details.blk .inner { border-width: 1px 0 0; border-radius: 0 0 10px 10px; }
+details.blk .inner { border-top: 1px solid var(--border); padding: 10px 14px; }
+.pano { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px 18px; }
+.pano div { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dashed var(--border);
+  padding: 3px 0; font-size: 13px; min-width: 0; }
+.pano .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; min-width: 0; }
+.pano .s { white-space: nowrap; font-size: 12px; color: var(--muted-foreground); }
+.pano .s.p { color: var(--green); } .pano .s.g { color: var(--blue); }
+.linkish { all: unset; cursor: pointer; text-decoration: underline; text-decoration-color: var(--border);
+  text-underline-offset: 3px; }
+.linkish:hover { text-decoration-color: currentColor; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 10px; }
+.card { border: 1px solid var(--border); border-radius: 10px; background: var(--card); padding: 12px 14px; }
+.card h3 { margin-top: 0; }
+.note { font-size: 12.5px; color: var(--muted-foreground); }
+.err { color: var(--red); font-weight: 600; }
+@media (max-width: 760px) { html.standalone .po { padding: 20px 14px 48px; } .hide-sm { display: none; } }
+</style>
+</head>
+<body>
+<main class="po" id="po">
+  <header>
+    <h1>项目总览</h1>
+    <p class="meta" id="meta"></p>
+  </header>
+  <p class="err" id="err" role="alert" hidden></p>
+  <section class="stats" id="stats" aria-label="概览数字"></section>
+  <ul class="alerts" id="alerts" aria-label="重点提醒"></ul>
+  <div class="tabs" role="tablist" aria-label="视图切换">
+    <button role="tab" id="t-groups" aria-controls="p-groups" aria-selected="true">按分组</button>
+    <button role="tab" id="t-list" aria-controls="p-list" aria-selected="false" tabindex="-1">全部清单</button>
+    <button role="tab" id="t-pano" aria-controls="p-pano" aria-selected="false" tabindex="-1">目录全景</button>
+    <button role="tab" id="t-issues" aria-controls="p-issues" aria-selected="false" tabindex="-1">问题与建议</button>
+    <button role="tab" id="t-apps" aria-controls="p-apps" aria-selected="false" tabindex="-1">软件与跳过</button>
+  </div>
+  <section role="tabpanel" id="p-groups" aria-labelledby="t-groups"></section>
+  <section role="tabpanel" id="p-list" aria-labelledby="t-list" hidden>
+    <div class="bar">
+      <input type="search" id="q" placeholder="搜索名称、路径、说明（空格分隔多个词）" aria-label="搜索">
+      <select id="f-group" aria-label="按分组筛选"></select>
+      <select id="f-type" aria-label="按类型筛选"></select>
+      <select id="f-status" aria-label="按活跃状态筛选"></select>
+      <select id="f-drive" aria-label="按根目录筛选"></select>
+      <label class="chk"><input type="checkbox" id="f-iss"> 只看有问题的</label>
+      <span class="mut" id="count" aria-live="polite"></span>
+    </div>
+    <div class="scroll"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+  </section>
+  <section role="tabpanel" id="p-pano" aria-labelledby="t-pano" hidden></section>
+  <section role="tabpanel" id="p-issues" aria-labelledby="t-issues" hidden></section>
+  <section role="tabpanel" id="p-apps" aria-labelledby="t-apps" hidden></section>
+</main>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+__APP_JS__
+</script>
+</body>
+</html>

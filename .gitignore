@@ -1,0 +1,10 @@
+output/
+atlas.config.json
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.venv/
+demo-tree/
+ci-output/

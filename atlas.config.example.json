@@ -1,0 +1,33 @@
+{
+  "_说明": "复制为 atlas.config.json 再修改；所有字段都可以不写。roots 留空 = 所有本地磁盘 + 用户主目录。",
+  "roots": [],
+  "exclude": [
+    "D:\\Games",
+    "~/Movies"
+  ],
+  "github_users": [
+    "your-github-name"
+  ],
+  "groups": [
+    {
+      "name": "个人网站",
+      "keywords": [
+        "blog",
+        "site"
+      ]
+    },
+    {
+      "name": "机器学习",
+      "keywords": [
+        "model",
+        "train"
+      ]
+    }
+  ],
+  "recents": true,
+  "anomalies": true,
+  "git": true,
+  "max_depth": 7,
+  "home_depth": 6,
+  "system_drive_depth": 3
+}
