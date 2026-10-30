@@ -11,8 +11,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python: ["3.9", "3.13"]
-        exclude:
+        exclude:  # 新版 Ubuntu / macOS 运行器已经没有 Python 3.9，3.9 在 Windows 上测
           - os: macos-latest
+            python: "3.9"
+          - os: ubuntu-latest
             python: "3.9"
     runs-on: ${{ matrix.os }}
     steps:
